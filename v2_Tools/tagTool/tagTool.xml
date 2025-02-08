@@ -1,0 +1,178 @@
+<Defaults>
+    <Panel class="p_BlackPinLine" position="0 0 -35" width="450" height="120" color="#000000" recalignment="MiddleCenter" allowDragging="false" active="true" raycastTarget="false" padding="4 4 4"/>
+    <Panel class="p_YellowkPinLine" color="#FBC02D" recalignment="MiddleCenter" allowDragging="false" active="true" raycastTarget="false" padding="4 4 4"/>
+    <Panel class="p_BlackOutLine" color="#000000" recalignment="MiddleCenter" allowDragging="false" active="true" raycastTarget="false" padding="10 10 10"/>
+    <Panel class="p_YellowOutLine" color="#FBC02D" recalignment="MiddleCenter" allowDragging="false" active="true" raycastTarget="false" padding="2 2 2"/>
+
+    <Panel class="p_placeHolder" color="#FBC02D00" width="10" height="10" position="0 0 -35" recalignment="MiddleCenter" allowDragging="false" active="true" raycastTarget="false"/>
+
+    <Button class="b_top" onCLick="b_buttonOnClick" colors="#757575|#9e9696|#605a5a|#00000000" outLineColor="#111111" outLineSize="2 2 2 2" resizeTextMaxSize="50" resizeTextForBestFit="true" textColor="White"/>
+    <Button class="b_process" onCLick="b_buttonOnClick" colors="#757575|#9e9696|#605a5a|#00000000" outLineColor="#111111" outLineSize="2 2 2 2" textColor="White" resizeTextMaxSize="70" resizeTextForBestFit="true"/>
+    <Button class="b_toggle" onCLick="b_buttonOnClick" colors="#970707|#cb1010|#6b0f0f|#00000000" outLineColor="#111111" outLineSize="2 2 2 2" textColor="White" resizeTextMaxSize="70" resizeTextForBestFit="true"/>
+</Defaults>
+
+<Panel class="p_BlackPinLine" offsetXY="-520 880">
+    <Panel class="p_YellowkPinLine">
+        <Panel class="p_BlackOutLine">
+            <Panel class="p_YellowOutLine">
+                <Button class="b_top" text="Spawn Note Cards" id="b_SpawnNoteCards"/>
+            </Panel>
+        </Panel>
+    </Panel>
+</Panel>
+
+<Panel class="p_BlackPinLine" offsetXY="0 880">
+    <Panel class="p_YellowkPinLine">
+        <Panel class="p_BlackOutLine">
+            <Panel class="p_YellowOutLine">
+                <Button class="b_top" text="Spawn Platforms" id="b_SpawnPlatforms"/>
+            </Panel>
+        </Panel>
+    </Panel>
+</Panel>
+
+<Panel class="p_BlackPinLine" offsetXY="520 880">
+    <Panel class="p_YellowkPinLine">
+        <Panel class="p_BlackOutLine">
+            <Panel class="p_YellowOutLine">
+                <Button class="b_top" text="Spawn Bags" id="b_SpawnBags"/>
+            </Panel>
+        </Panel>
+    </Panel>
+</Panel>
+<!-- BUTTONS AT BASE OF TOOL ============================================================================================= -->
+<!-- COLUME  ONE ========================================================================================================= -->
+<Panel class="p_placeHolder" offsetXY="-600 -1040">
+    <!-- SWITCH : REPLACE (Name) ........................................... -->
+    <Panel class="p_BlackPinLine" height="100" width="380" offsetXY="0 150">
+        <Panel class="p_YellowkPinLine">
+            <Panel class="p_BlackOutLine">
+                <Panel class="p_YellowOutLine">
+                    <Button class="b_toggle" id="switch_replace" text="replace" colors="#cf28d3|#fc72ff|#7b1a7d|#00000000"/>
+                </Panel>
+            </Panel>
+        </Panel>
+    </Panel>
+    <!-- NAME BUTTON ....................................................... -->
+    <Panel class="p_BlackPinLine" height="180" width="380">
+        <Panel class="p_YellowkPinLine">
+            <Panel class="p_BlackOutLine">
+                <Panel class="p_YellowOutLine">
+                    <Button class="b_toggle" id="toggle_name" text="Name"/>
+                </Panel>
+            </Panel>
+        </Panel>
+    </Panel>
+    <!-- SWITCH : PREFIX ................................................... -->
+    <Panel class="p_BlackPinLine" height="100" width="100" offsetXY="-250 0">
+        <Panel class="p_YellowkPinLine">
+            <Panel class="p_BlackOutLine">
+                <Panel class="p_YellowOutLine">
+                    <Button class="b_toggle" id="switch_prefix" text="P" />
+                </Panel>
+            </Panel>
+        </Panel>
+    </Panel>
+    <!-- SUFFIX BUTTON ..................................................... -->
+    <Panel class="p_BlackPinLine" height="100" width="100" offsetXY="250 0">
+        <Panel class="p_YellowkPinLine">
+            <Panel class="p_BlackOutLine">
+                <Panel class="p_YellowOutLine">
+                    <Button class="b_toggle" id="switch_suffix" text="S" />
+                </Panel>
+            </Panel>
+        </Panel>
+    </Panel>
+    <!-- DESCRIPTION BUTTON ................................................ -->
+    <Panel class="p_BlackPinLine" height="180" width="380" offsetXY="0 -190">
+        <Panel class="p_YellowkPinLine">
+            <Panel class="p_BlackOutLine">
+                <Panel class="p_YellowOutLine">
+                    <Button class="b_toggle" id="toggle_description" text="Description" />
+                </Panel>
+            </Panel>
+        </Panel>
+    </Panel>
+</Panel>
+
+<!-- COLUME TWO ========================================================================================================= -->
+<Panel class="p_placeHolder" offsetXY="0 -950">
+<!-- GMNOTE BUTTON ......................................................... -->
+    <Panel class="p_BlackPinLine" height="180" width="380">
+        <Panel class="p_YellowkPinLine">
+            <Panel class="p_BlackOutLine">
+                <Panel class="p_YellowOutLine">
+                    <Button class="b_toggle" id="toggle_GMnote" text="GMnotes"/>
+                </Panel>
+            </Panel>
+        </Panel>
+    </Panel>
+<!-- PROPERTIES BUTTON ..................................................... -->
+    <Panel class="p_BlackPinLine" height="180" width="380"  offsetXY="0 -190">
+        <Panel class="p_YellowkPinLine">
+            <Panel class="p_BlackOutLine">
+                <Panel class="p_YellowOutLine">
+                    <Button class="b_toggle" id="toggle_properties" text="Properties"/>
+                </Panel>
+            </Panel>
+        </Panel>
+    </Panel>
+</Panel>
+
+<!-- COLUME THREE ========================================================================================================= -->
+<Panel class="p_placeHolder" offsetXY="600 -950">
+<!-- TAGS BUTTON ..................................................... -->
+    <Panel class="p_BlackPinLine" height="180" width="380">
+        <Panel class="p_YellowkPinLine">
+            <Panel class="p_BlackOutLine">
+                <Panel class="p_YellowOutLine">
+                    <Button class="b_toggle" id="toggle_tags" text="TAGs"/>
+                </Panel>
+            </Panel>
+        </Panel>
+    </Panel>
+    <!-- CLEAR TAGS BUTTON ..................................................... -->
+    <Panel class="p_BlackPinLine" height="80" width="200" offsetXY="300 45">
+        <Panel class="p_YellowkPinLine">
+            <Panel class="p_BlackOutLine">
+                <Panel class="p_YellowOutLine">
+                    <Button class="b_toggle" id="switch_tagClear" text="clear all tags" />
+                </Panel>
+            </Panel>
+        </Panel>
+    </Panel>
+    <!-- REPLACE TAGS BUTTON ..................................................... -->
+    <Panel class="p_BlackPinLine" height="80" width="200" offsetXY="300 -45">
+        <Panel class="p_YellowkPinLine">
+            <Panel class="p_BlackOutLine">
+                <Panel class="p_YellowOutLine">
+                    <Button class="b_toggle" id="switch_tagReplace" text="replace tags" />
+                </Panel>
+            </Panel>
+        </Panel>
+    </Panel>
+<!-- TOGGLES BUTTON ........................................................ -->
+    <Panel class="p_BlackPinLine" height="180" width="380"  offsetXY="0 -190">
+        <Panel class="p_YellowkPinLine">
+            <Panel class="p_BlackOutLine">
+                <Panel class="p_YellowOutLine">
+                    <Button class="b_toggle" id="toggle_toggles" text="Toggles"/>
+                </Panel>
+            </Panel>
+        </Panel>
+    </Panel>
+</Panel>
+
+<!-- COLUME THREE ============================================================ -->
+<Panel class="p_placeHolder" offsetXY="0 -1450">
+<!-- TAGS BUTTON ..................................................... -->
+    <Panel class="p_BlackPinLine" height="180" width="1300">
+        <Panel class="p_YellowkPinLine">
+            <Panel class="p_BlackOutLine">
+                <Panel class="p_YellowOutLine">
+                    <Button class="b_process" id="b_processNoteCards" text="Process All NoteCards"/>
+                </Panel>
+            </Panel>
+        </Panel>
+    </Panel>
+</Panel>

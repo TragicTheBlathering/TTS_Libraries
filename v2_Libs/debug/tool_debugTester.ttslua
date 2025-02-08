@@ -1,0 +1,30 @@
+local dprint = require("/_Libraries/v2_Libs/debug/debugPrint").dprint
+function onload()
+    makeButton()
+end
+
+function b_Function()
+    local testing = {1,2,3,4,5}
+--[[
+]]
+    dprint("This is a custom String") -- sending a string
+    dprint() -- sending nothing
+
+    dprint(true); dprint(false) -- sending a bool
+    dprint(testing) -- sending a single variable, but not a single string or bool
+    dprint(testing, 'testing')
+    dprint('testing', "string")
+    dprint('testing', testing)
+
+
+end
+
+function makeButton(switch)
+    if switch == nil then
+        self.createButton({
+            label='Test Button', click_function="b_Function", function_owner=self,
+            position={0,0.5,1}, rotation={0,180,0}, height=800, width=2500,
+            font_size=250
+        })
+    end
+end

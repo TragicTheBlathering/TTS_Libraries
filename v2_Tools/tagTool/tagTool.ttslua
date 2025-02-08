@@ -1,0 +1,624 @@
+local ShowDebug = false
+local dprint = require("/_Libraries/v2_Libs/debug/debugPrint").dprint
+local Button= {}
+local EditData = {}
+local Wait_ids = {}
+local Plat_Tags = {'tagTool_NameDesc_plat', 'tagTool_GMNotes_plat', 'tagTool_searchReplace_plat', 'tagTool_Tags_plat', 'tagTool_ObjToggle_plat', 'tagTool_ObjProp_plat'}
+local butCol = {green={colors="#298115|#33a11a|#2a4c0e|#00000000", textColor="White"}, red={colors="#970707|#cb1010|#6b0f0f|#00000000", textColor="White"}, pink={colors="#cf28d3|#fc72ff|#7b1a7d|#00000000", textColor="White"}}
+local butToggles = {toggle_name=false,
+                    toggle_description=false,
+                    toggle_GMnote=false,
+                    toggle_searchReplace=false,
+
+                    toggle_tags=false,
+                    toggle_toggles=false,
+                    toggle_properties=false,
+
+                    switch_replace=true,
+                    switch_suffix=false,
+                    switch_prefix=false,
+
+                    switch_tagClear=false,
+                    switch_tagReplace=false
+            }
+
+
+
+local pc = {}
+function onload()
+    self.setScale(Vector(1.23, 1, 1.20))
+    self.setRotation(Vector(0, 0, 0))
+    --pc.black  = '['..Color.black:toHex(false)..']'
+    --pc.blue   = '['..Color.blue:toHex(false)..']'
+    --pc.brown  = '['..Color.brown:toHex(false)..']'
+    --pc.green  = '['..Color.green:toHex(false)..']'
+    --pc.grey   = '['..Color.grey:toHex(false)..']'
+    --pc.pink   = '['..Color.pink:toHex(false)..']'
+    --pc.purple = '['..Color.purple:toHex(false)..']'
+    --pc.teal   = '['..Color.teal:toHex(false)..']'
+    pc.orange = '['..Color.orange:toHex(false)..']'
+    pc.red    = '['..Color.red:toHex(false)..']'
+    pc.white  = '['..Color.white:toHex(false)..']'
+    pc.yellow = '['..Color.yellow:toHex(false)..']'
+    pc.c  = '[-]'
+end
+
+--**************************************************************************************************************
+--****** Buttons ***********************************************************************************************
+--**************************************************************************************************************
+function b_buttonOnClick(player, leftClick, id)
+    if tonumber(leftClick) == -2 and player.admin then leftClick = false elseif player.admin then leftClick = true end
+    if string.find(id, "toggle", 1, true) or string.find(id, "switch", 1, true) then
+        Button.toggleButtons(id)
+    else
+        Button[id](leftClick)
+    end
+end
+
+function Button.b_empty(leftClick)
+    print('-- EMPTY BUTTON --')
+end
+--------------------------------------------------------------------------------
+-- Toggle Buttons --------------------------------------------------------------
+function Button.toggleButtons(id)
+
+    if butToggles[id] then butToggles[id] = false else butToggles[id] = true end
+
+    if id=="switch_replace" or id=="switch_suffix" or id=="switch_prefix" then
+        if butToggles[id] then
+            if id=="switch_replace" then
+                self.UI.setAttributes(id, butCol.pink)
+                self.UI.setAttributes("switch_prefix", butCol.red); butToggles.switch_prefix = false
+                self.UI.setAttributes("switch_suffix", butCol.red); butToggles.switch_suffix = false
+            elseif id=="switch_prefix" then
+                self.UI.setAttributes(id, butCol.pink)
+                self.UI.setAttributes("switch_replace", butCol.red); butToggles.switch_replace = false
+                self.UI.setAttributes("switch_suffix", butCol.red); butToggles.switch_suffix = false
+            elseif id=="switch_suffix" then
+                self.UI.setAttributes(id, butCol.pink)
+                self.UI.setAttributes("switch_replace", butCol.red); butToggles.switch_replace = false
+                self.UI.setAttributes("switch_prefix", butCol.red); butToggles.switch_prefix = false
+            end
+        else
+            self.UI.setAttributes(id, butCol.red)
+        end
+
+    elseif id == "switch_tagClear" or id == "switch_tagReplace" then
+        if butToggles[id] then
+            if id == "switch_tagClear" then
+                self.UI.setAttributes(id, butCol.pink)
+                self.UI.setAttributes("switch_tagReplace", butCol.red); butToggles.switch_tagReplace = false
+                self.UI.setAttributes("toggle_tags", butCol.green); butToggles.toggle_tags = true
+
+            elseif id == "switch_tagReplace" then
+                self.UI.setAttributes(id, butCol.pink)
+                self.UI.setAttributes("switch_tagClear", butCol.red); butToggles.switch_tagClear = false
+                self.UI.setAttributes("toggle_tags", butCol.green); butToggles.toggle_tags = true
+            end
+        else
+            self.UI.setAttributes(id, butCol.red)
+        end
+
+    else
+        if butToggles[id] then
+            self.UI.setAttributes(id, butCol.green)
+        else
+            self.UI.setAttributes(id, butCol.red)
+        end
+    end
+end
+--**************************************************************************************************************
+--****** EDIT ACTUAL OBJECT DATA *******************************************************************************
+--**************************************************************************************************************
+function EditData.toggle_GMnote(noteCard, objsOnTool, id)
+    --dprint("objsOnTool", objsOnTool.bags[1].newData.ContainedObjects)
+    local function setData_obj(obj)
+        obj.GMNotes = noteCard.data.Description
+    end
+
+    for type, group in pairs(objsOnTool) do
+        if type == "objs" then
+            for k, v in pairs(group) do
+                setData_obj(v.newData)
+            end
+
+        elseif type == "bags" or type == "decks" then
+            for k, bag in pairs(group) do
+                for k, o in pairs(bag.newData.ContainedObjects) do
+                    setData_obj(o)
+                end
+            end
+        end
+    end
+
+end
+
+function EditData.toggle_toggles(noteCard, objsOnTool, id)
+    local function setData_obj(obj)
+        --obj.Locked = noteCard.data.Locked
+        obj.DragSelectable = noteCard.data.DragSelectable
+        obj.Snap = noteCard.data.Snap
+        obj.Grid = noteCard.data.Grid
+        obj.Autoraise = noteCard.data.Autoraise
+        obj.Sticky = noteCard.data.Sticky
+        obj.Hands = noteCard.data.Hands
+        obj.HideWhenFaceDown = noteCard.data.HideWhenFaceDown
+        obj.IgnoreFoW = noteCard.data.IgnoreFoW
+        obj.MeasureMovement = noteCard.data.MeasureMovement
+        obj.Tooltip = noteCard.data.Tooltip
+        obj.GridProjection = noteCard.data.GridProjection
+        if noteCard.data.FogOfWarRevealer ~= nil then
+            obj.FogOfWarRevealer = noteCard.data.FogOfWarRevealer
+        end
+    end
+
+    for type, group in pairs(objsOnTool) do
+        if type == "objs" then
+            for k, v in pairs(group) do
+                setData_obj(v.newData)
+            end
+
+        elseif type == "bags" then
+            for k, bag in pairs(group) do
+                for k, o in pairs(bag.newData.ContainedObjects) do
+                    setData_obj(o)
+                end
+            end
+
+        elseif type == "decks" then
+            for k, deck in pairs(group) do
+                for k, o in pairs(deck.newData.ContainedObjects) do
+                    setData_obj(o)
+                end
+                setData_obj(deck.newData)
+            end
+        end
+    end
+end
+
+function EditData.toggle_tags(noteCard, objsOnTool, id)
+    local function setData_obj(obj, newTags)
+        if butToggles.switch_tagClear then
+            obj.Tags = {}
+        elseif butToggles.switch_tagReplace then
+            obj.Tags = newTags.add
+        else
+            local finalTags = merge_tables(obj.Tags, newTags.add)
+            if newTags.remove then
+                finalTags = removeMatches(finalTags, newTags.remove)
+            end
+            obj.Tags = finalTags
+        end
+    end
+
+    local newTags = setTagsFromData(noteCard.data.Description)
+    for type, group in pairs(objsOnTool) do
+        if type == "objs" then
+            for k, v in pairs(group) do
+                setData_obj(v.newData, newTags)
+            end
+
+        elseif type == "bags" then
+            for k, bag in pairs(group) do
+                for k, o in pairs(bag.newData.ContainedObjects) do
+                    setData_obj(o, newTags)
+                end
+            end
+
+        elseif type == "decks" then
+            for k, deck in pairs(group) do
+                for k, o in pairs(deck.newData.ContainedObjects) do
+                    setData_obj(o, newTags)
+                end
+                setData_obj(deck.newData, newTags)
+            end
+        end
+    end
+end
+
+function removeMatches(table1, table2)
+    local lookup = {}
+
+    -- Create a lookup table for quick search
+    for _, value in ipairs(table2) do
+        lookup[value] = true
+    end
+
+    -- Filter table1, keeping only values not found in table2
+    local result = {}
+    for _, value in ipairs(table1) do
+        if not lookup[value] then
+            table.insert(result, value)
+        end
+    end
+
+    return result
+end
+
+function merge_tables(tbl1, tbl2)
+    local seen = {}
+    local result = {}
+
+    -- Add elements from the first table
+    for _, v in ipairs(tbl1) do
+        if not seen[v] then
+            seen[v] = true
+            table.insert(result, v)
+        end
+    end
+
+    -- Add elements from the second table
+    for _, v in ipairs(tbl2) do
+        if not seen[v] then
+            seen[v] = true
+            table.insert(result, v)
+        end
+    end
+    table.sort(result)
+    return result
+end
+
+function setTagsFromData(description)
+    -- If Tags are set to Clear!
+    if butToggles.switch_tagClear then
+        return "clearTags"
+    else
+        local tags = findTags(description)
+        return tags
+    end
+end
+
+function findTags(description)
+    local add = {}
+    local remove = {}
+    for line in description:gmatch("[^\r\n]+") do
+        if string.sub(string.lower(line), 1, #"add:") == "add:" then
+            local tag = string.sub(line, 5)
+            table.insert(add, tag)
+        elseif string.sub(string.lower(line), 1, #"remove:") == "remove:" then
+            local tag = string.sub(line, 8)
+            table.insert(remove, tag)
+        end
+    end
+
+    if #remove == 0 then
+        remove = false
+    end
+
+    table.sort(add)
+    return {add=add, remove=remove}
+end
+
+function split_lines(input)
+    local lines = {}
+    for line in input:gmatch("[^\r\n]+") do
+        table.insert(lines, line)
+    end
+    return lines
+end
+
+--**************************************************************************************************************
+--****** Process Note Cards ************************************************************************************
+--**************************************************************************************************************
+--------------------------------------------------------------------------------
+-- Process Notecards -----------------------------------------------------------
+function Button.b_processNoteCards(leftClick)
+    local platforms = find_Platforms()--;dprint("platforms", platforms)
+    local noteCards = find_NoteCards(platforms)--;dprint("noteCards", noteCards)
+    local objsOnTool = cast('objectsOnTool', self)--;dprint("objsOnTool", objsOnTool)
+    local validCards, validToggles = setButtons(noteCards)
+    if validCards and validToggles then
+        for id,v in pairs(noteCards) do
+            if v.found and butToggles[id] then
+                EditData[id](v, objsOnTool, id)
+            end
+        end
+
+        Wait.frames(function() SpawnEditedObjects(objsOnTool) end, 5)
+    else
+        if validCards and not validToggles then
+            print(pc.orange.."--== "..pc.yellow.." Might help if you have some buttons set to on!"..pc.orange.." ==--"..pc.c)
+        else
+            print(pc.orange.."--== "..pc.red.."ERROR :"..pc.yellow.." You have to have noteCards on the platforms!"..pc.orange.." ==--"..pc.c)
+        end
+    end
+end
+
+function SpawnEditedObjects(objsOnTool)
+    for type, group in pairs(objsOnTool) do
+        for k, v in pairs(group) do
+            destroyObject(v.obj)
+            local pos = v.obj.getPosition()+Vector(0,1,0)
+            local newObj = spawnObjectData({data = v.newData, position=pos, sound=true})
+        end
+    end
+end
+
+function setButtons(noteCards)
+    local notecard = false
+    for key, note in pairs(noteCards) do
+        if not note.found and butToggles[key] then
+            --dprint(key.." -> "..tostring(note.found).." : "..tostring(butToggles[key]))
+            butToggles[key] = false
+            self.UI.setAttributes(key, butCol.red)
+        end
+    end
+
+    for k,note in pairs(noteCards) do
+        if note.found then
+            notecard = true
+            break
+        end
+    end
+
+    local toggles = false
+    for k, v in pairs(butToggles) do
+        if string.find(k, "toggle", 1, true) then
+            if v then
+                toggles = true
+                break
+            end
+        end
+    end
+
+    return notecard, toggles
+end
+
+function find_NoteCards(platforms)
+    local z = {}
+    for tag, plat in pairs(platforms) do
+        local found = cast("findCards", platforms[tag].platform)
+        if found then
+            z[tag] = {found=found, data=found.getData(), tag=platforms[tag].tag}
+        else
+            z[tag] = {found=found, data=found, tag=platforms[tag].tag}
+        end
+    end
+    return z
+end
+
+--**************************************************************************************************************
+--****** Casting *********s ************************************************************************************
+--**************************************************************************************************************
+
+function cast(switch, sourceObj)
+    local cast = {}
+
+    if switch == 'findCards' then
+        --print('notepad')
+        cast = {size=Vector(1, 1, 1), posOffset=Vector(0, 0.85, 0)}
+
+    elseif switch == 'objectsOnTool' then
+        cast = {size=Vector(19.6,5,19.1), posOffset=Vector(0, 2.5, 0)}
+
+    else
+        cast = {size=Vector(1, 1, 1), posOffset=Vector(0, 2.85, 0)}
+        error("ELSE FUNCTION IN CAST = function cast(switch, sourceObj)")
+    end
+
+    local zone = Physics.cast({ origin=sourceObj.getPosition() + cast.posOffset,
+                                direction={0,1,0},
+                                type=3,
+                                max_distance=0,
+                                size=cast.size,
+                                debug=ShowDebug})
+
+    return processCast(zone, switch)
+end
+
+function processCast(zone, switch)
+    if switch == 'findCards' then
+        for k,o in pairs(zone) do
+            local obj = o.hit_object
+            if obj.type == 'Notecard' then
+                return obj
+            end
+        end
+        return false
+
+    elseif switch == 'objectsOnTool' then
+        local z = {bags = {}, decks = {}, objs = {}}
+        for k,o in pairs(zone) do
+            local obj = o.hit_object
+            if obj ~= self then
+                if obj.type == "Bag" then
+                    table.insert(z.bags, {obj=obj, data=obj.getData(), newData=obj.getData()})
+
+                elseif obj.type == "Deck" then
+                    table.insert(z.decks, {obj=obj, data=obj.getData(), newData=obj.getData()})
+
+                else
+                    table.insert(z.objs, {obj=obj, data=obj.getData(), newData=obj.getData()})
+                end
+            end
+        end
+        return z
+
+    else
+        error("ELSE FUNCTION IN CAST - processCast(zone, switch)")
+        return "temp value, function not written"
+    end
+
+    return "test"
+end
+
+function find_Platforms()
+    local z = {}
+    for k, tag in pairs(Plat_Tags) do
+        local obj = getObjectsWithTag(tag)
+        local key = tag
+        if obj[1] then
+            if tag == "tagTool_NameDesc_plat" then key = "toggle_name"; z.toggle_description = {platform=obj[1], tag=tag}
+            elseif tag == "tagTool_GMNotes_plat" then key = "toggle_GMnote"
+            elseif tag == "tagTool_ObjProp_plat" then key = "toggle_properties"
+            elseif tag == "tagTool_Tags_plat" then key = "toggle_tags"
+            elseif tag == "tagTool_ObjToggle_plat" then key = "toggle_toggles"
+            elseif tag == "tagTool_searchReplace_plat" then key = "toggle_searchReplace"
+            end
+            z[key] = {platform=obj[1], tag=tag}
+        end
+    end
+
+    return z
+end
+
+--**************************************************************************************************************
+--****** Rest of the Buttons ***********************************************************************************
+--**************************************************************************************************************
+--------------------------------------------------------------------------------
+-- Spawn NoteCards -------------------------------------------------------------
+function Button.b_SpawnNoteCards(leftClick)
+    local function spawnNoteCards(n)
+            self.setLock(true)
+            local pos = self.getPosition()+Vector(-6.4, 2, 13.7)
+            local rot = Vector(0,0,0)
+            local scale = Vector(0.75,0.75,0.75)
+            local offSet = Vector(0,0.3,0)
+
+            for i = 1,n,1 do
+                spawnObject({type='notecard', position=pos+offSet, rotation=rot, scale=scale, sound=true})
+                offSet = offSet + Vector(0,0.3,0)
+            end
+    end
+
+    if leftClick then
+        countClicks(self,spawnNoteCards, 0.4)
+    else
+        spawnNoteCards(6)
+    end
+end
+--------------------------------------------------------------------------------
+-- Spawn Platforms -------------------------------------------------------------
+function Button.b_SpawnPlatforms(leftClick)
+    local function destroyPlatforms()
+        for i,t in ipairs(Plat_Tags) do
+            local objs = getObjectsWithTag(t)
+            for _, o in pairs(objs) do
+                destroyObject(o)
+            end
+        end
+    end
+
+    local function spawnPlatform(platform, t, i, adjust, pos, rot, scale)
+        local newObj = spawnObjectData({data = platform, position=pos+adjust[i], rotation=rot, scale=scale, sound=true})
+        newObj.setSnapPoints({{position = {0, 0, 0}, rotation = {0, 0, 0},rotation_snap = true}})
+        newObj.setLock(true)
+        newObj.setTags({t})
+    end
+
+    if leftClick then
+        destroyPlatforms()
+        local adjust = {Vector(-13.3, 0, 6),Vector(-13.3, 0, 0),Vector(-13.3, 0, -6)
+                       ,Vector (13.3, 0, 6),Vector (13.3, 0, 0),Vector (13.3, 0, -6)}
+        local pos = self.getPosition()
+        local rot = self.getRotation()
+        local scale = Vector(0.35, 1, 0.25)
+
+        local platform = self.getData()
+              platform.LuaScript = ""
+              platform.LuaScriptState = ""
+              platform.XmlUI = ""
+              platform.GMNotes = ""
+              platform.Memo = ""
+              platform.Tooltip = true
+              platform.Tags = {}
+
+        for i,t in ipairs(Plat_Tags) do
+            if t == 'tagTool_NameDesc_plat' then
+                platform.Nickname = 'Add Name or Description'
+                platform.Description = "Place NOTECARD on platform.\n\nNAME : is taken form the NAME FIELD\n\nDESCRIPTON : is taken from the DESCRIPTION FIELD and it is always REPLACED.\n\nThe Name can be placed as a SUFFIX, PREFIX or it will REPLACE.\n\nTo CLEAR a field, enter exactly (including <> brackets) <ClearField>\n\nLeaving a field Blank will make zero changes to existing fields."
+                spawnPlatform(platform, t, i, adjust, pos, rot, scale)
+
+            elseif t == 'tagTool_GMNotes_plat' then
+                platform.Nickname = 'Add GMNotes'
+                platform.Description = 'Place NOTECARD on platform.\n\nNAME : is ignored\nGMNotes : are taken from the DESCRIPTION FIELD.\n\nThe GMNotes is always REPLACED.\n\nnTo CLEAR the GMNotes, enter \"ClearField\" into the field. Leaving the field BLANK will leave the existing GMNotes untouched.'
+                spawnPlatform(platform, t, i, adjust, pos, rot, scale)
+
+            elseif t == 'tagTool_searchReplace_plat' then
+                platform.Nickname = 'Edit existing Name or Description'
+                platform.Description = 'Place the text to search for in the NAME or DESCRIPTION and it will be replaced by the text on the Name and Descition Card (top left platform). If the exact text is not found, nothing will happen.'
+                spawnPlatform(platform, t, i, adjust, pos, rot, scale)
+
+            elseif t == 'tagTool_Tags_plat' then
+                platform.Nickname = 'Add / Remove Tags.'
+                platform.Description = 'Add a list of tags into the Description. put \"add:\" or \"remove:\" in front of each tag\n\nYou can also set a tag to be IGNORED by placing \"--\" in from of it.'
+                spawnPlatform(platform, t, i, adjust, pos, rot, scale)
+
+            elseif t == 'tagTool_ObjToggle_plat' then
+                platform.Nickname = 'Copy Toggles'
+                platform.Description = 'Set the TOGGLES of the NOTECARD and it will copy those Toggles to the found objects on the Tool.'
+                spawnPlatform(platform, t, i, adjust, pos, rot, scale)
+
+            elseif t == 'tagTool_ObjProp_plat' then
+                platform.Nickname = 'Set Object Properties'
+                platform.Description = 'Set Object Properties. EG: scale:{x,y,z}'
+                spawnPlatform(platform, t, i, adjust, pos, rot, scale)
+            end
+        end
+    else
+        destroyPlatforms()
+    end
+end
+--------------------------------------------------------------------------------
+-- Spawn Bags ------------------------------------------------------------------
+function Button.b_SpawnBags(leftClick)
+
+    local function spawnBags(clickCount)
+        if clickCount > 20 then clickCount = 20 end
+        local bagCount = 'Bag'; if clickCount > 1 then bagCount = 'Bags' end
+        printToAll('\nSpawning '..clickCount..' '..bagCount, 'Orange')
+
+        local OffSet = Vector(-7.5,2,5.5)
+        local horizontal_spill = 0
+        for i=1, clickCount, 1 do
+            horizontal_spill = horizontal_spill + 1
+            OffSet:sub(Vector(-3,0,0))
+            if horizontal_spill > 4 then
+                OffSet:sub(Vector(12,0,2.75))
+                horizontal_spill = 1
+            end
+
+            local spawnedBag = spawnObject({
+                    type = 'Bag',
+                    position = self.getPosition()+OffSet,
+                    scale = {1, 1, 1},
+                    sound = true,
+                })
+            spawnedBag.setName('Edit Tags Bag '..i)
+            spawnedBag.setDescription('Place Objects, Bags or Decks in this bag to edit the tags based on the Description of the SET TAGES TOOL')
+        end
+    end
+
+    if leftClick then
+        countClicks(self,spawnBags, 0.4)
+    else
+        spawnBags(20)
+    end
+end
+--[[
+
+]]
+
+--**************************************************************************************************************
+--****** TOOLS * ***********************************************************************************************
+--**************************************************************************************************************
+--------------------------------------------------------------------------------
+--- Wait Tools -----------------------------------------------------------------
+function countClicks(obj,func,delay)
+    --print('IN : waitUtils.countClicks')
+    local delay = delay or 0.8 -- better way of setting default parameters
+    Wait_ids[obj] = Wait_ids[obj] or { -- just to be sure there's no attempt to index a nil value later we set an empty table first.
+      count = 0, -- We set the count to 0 here when the table is made
+    }
+
+    function delayCall()
+        func(Wait_ids[obj].count)
+        Wait_ids[obj].waitID = nil -- remove the wait id when the function is called
+        Wait_ids[obj].count = 0  -- We set the count to 0 here when the wait has ended due to timeout
+    end
+
+    if Wait_ids[obj].waitID then Wait.stop(Wait_ids[obj].waitID); Wait_ids[obj].waitID = nil end -- end the previous wait if it exists
+    Wait_ids[obj].waitID = Wait.time(delayCall, delay) -- make a new wait, but with _no_ count
+
+    Wait_ids[obj].count = Wait_ids[obj].count + 1 -- finally increment the click amount.
+end

@@ -1,0 +1,62 @@
+local d_print = {}
+
+function d_print.dprint(txt, var)
+    local close = '[-]'
+    local red = '['..Color.fromString("Red"):toHex()..']'
+    local white = '['..Color.fromString("White"):toHex()..']'
+    local orange = '['..Color.fromString("Orange"):toHex()..']'
+
+    local value = false
+    local text = txt or ""
+
+    -- Case Group - Only a single Variable has been sent
+    if txt == nil then
+        print('-------- '..orange..'????'..white..' --------')
+        return
+    elseif txt ~= nil and var == nil then
+        if type(txt) == "string" then
+            print('-------- '..orange..txt..white..' --------')
+            return
+        elseif type(txt) == "boolean" then
+            print('-------- '..orange..tostring(txt)..white..' --------')
+            return
+        else
+            local title = '-------- '..orange..tostring(txt)..white..' --------'
+            print(logString(text, title))
+            print('-------------------------------------')
+            return
+        end
+    end
+
+    -- Case Ground 2 : Two varavles have been sent
+    local correctFormat = false
+    if txt ~= nil and var ~= nil then
+        -- Case 1: If second argument is provided, ensure first is a string
+        if type(txt) ~= "string" then
+            print(orange.."-------- "..red.."DEBUG ERROR :"..orange..' --------')
+            print("First argument should be always string!")
+            print(orange..'-----------------------_-----------')
+            return
+
+        elseif type(var) == "boolean" then
+            print('-------- '..orange.."bool"..white..' --------')
+            print(tostring(var))
+            print('-------------------------------------')
+            return
+
+        elseif type(var) == "string" then
+            print('-------- '..orange.."string"..white..' --------')
+            print(var)
+            print('-------------------------------------')
+        else
+            correctFormat = true
+        end
+    end
+
+    if correctFormat then
+        local text = '-------- '..orange..tostring(txt)..white..' --------'
+        print(logString(var, text))
+    end
+end
+
+return d_print
